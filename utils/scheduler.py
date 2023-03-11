@@ -19,8 +19,23 @@ class Warmup_MultiStepLR(LambdaLR):
         # # sine warm up
         # progress = float(step) / float(max(1, self.warmup_step))
         # lr_rate = math.sin(math.pi * float(0.5) * progress)
-        return lr_rate
-    
+        # return lr_rate
+        # if lr_rate<=0.1:
+        #     return 0.125
+        # elif lr_rate<=0.5:
+        #     return 0.375
+        # elif lr_rate<=0.75:
+        #     return 0.625
+        # else:
+        #     return 0.875
+
+        if lr_rate<=0.3:
+            return 0.15
+        elif lr_rate<=0.7:
+            return 0.5
+        else:
+            return 0.85
+
     def lr_decay(self, step):
         if step in self.milestones:
             self.milestones_rate = self.milestones_rate*self.gamma
