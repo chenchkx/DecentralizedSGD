@@ -45,7 +45,7 @@ plt.plot(x_data, y_data, linestyle='-', linewidth=1.5, color=sns.color_palette(n
 dsgd512_seed666_data = pd.read_csv(dsgd512_seed666_path)
 x_data = list(dsgd512_seed666_data.loc[:,'Step'])
 y_data = smooth(list(np.array(dsgd512_seed666_data.loc[:,'Value'].rolling(rolling_step).mean())), smooth_rate)
-plt.plot(x_data, y_data, linestyle='-', linewidth=1.5, color=sns.color_palette(n_colors=10)[3], label='D-SGD_8196')
+plt.plot(x_data, y_data, linestyle='-', linewidth=1.5, color=sns.color_palette(n_colors=10)[3], label='D-SGD_819w')
 
 
 csgd64_seed666_data = pd.read_csv(csgd64_seed666_path)
@@ -56,7 +56,7 @@ plt.plot(x_data, y_data, linestyle='-', linewidth=1.5, color=sns.color_palette(n
 csgd512_seed666_data = pd.read_csv(csgd512_seed666_path)
 x_data = list(csgd512_seed666_data.loc[:,'Step'])
 y_data = smooth(list(np.array(csgd512_seed666_data.loc[:,'Value'].rolling(rolling_step).mean())), smooth_rate)
-plt.plot(x_data, y_data, linestyle='-', linewidth=1.5, color=sns.color_palette(n_colors=10)[1], label='C-SGD_8196')
+plt.plot(x_data, y_data, linestyle='-', linewidth=1.5, color=sns.color_palette(n_colors=10)[1], label='C-SGD_8192')
 
 
 plt.xlabel('iteration', fontsize = 24)
