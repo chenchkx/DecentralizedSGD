@@ -29,12 +29,14 @@ class Warmup_MultiStepLR(LambdaLR):
         # else:
         #     return 0.875
 
-        if lr_rate<=0.2:
+        if lr_rate<=0.1:
             return 0.1
+        elif lr_rate<=0.3:
+            return 0.3
         elif lr_rate<=0.5:
-            return 0.35
+           return 0.5
         else:
-            return 0.75
+            return lr_rate
 
     def lr_decay(self, step):
         if step in self.milestones:
