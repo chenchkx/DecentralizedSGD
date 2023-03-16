@@ -3,6 +3,7 @@
 import time
 from .cifar10 import load_cifar10
 from .cifar100 import load_cifar100
+from .tinyimagenet import load_tinyimagenet
 
 def load_dataset(root, name, image_size, 
                  train_batch_size=64, valid_batch_size=64, 
@@ -27,4 +28,13 @@ def load_dataset(root, name, image_size,
                             rank=rank,
                             seed=seed
                             ) 
-    return 0
+    if name.lower() == 'tinyimagenet':
+        return load_tinyimagenet(root=root,  
+                            image_size=image_size,  
+                            train_batch_size=train_batch_size,
+                            valid_batch_size=valid_batch_size,
+                            distribute=distribute,
+                            split=split,
+                            rank=rank,
+                            seed=seed
+                            ) 
