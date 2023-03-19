@@ -8,7 +8,7 @@ __pycache__/
 
 logs_runs
 logs_perf
-
+hessian*
 datasets/cifar-10*
 datasets/tiny-imagenet*
 fig*

@@ -20,6 +20,8 @@ dir_path = os.path.dirname(__file__)
 nfs_dataset_path1 = '/mnt/nfs4-p1/ckx/datasets/'
 nfs_dataset_path2 = '/nfs4-p1/ckx/datasets/'
 
+# torch.set_num_threads(4) 
+
 def main(args):
     set_seed(args)
 
