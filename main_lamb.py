@@ -48,8 +48,7 @@ def main(args):
 
         optimizer = Lamb(model.parameters(), lr=args.lr, weight_decay=args.wd, betas=(.9, .999), adam=('lamb' == 'adam'))
 
-        scheduler = MultiStepLR(optimizer, milestones=args.milestones, gamma=args.gamma)
-        # scheduler = Warmup_MultiStepLR(optimizer, warmup_step=args.warmup_step, milestones=args.milestones, gamma=args.gamma)
+        scheduler = MultiStepLR(optimizer, milestones=[max(args.epoch, args.early_stop), max(args.epoch, args.early_stop)], gamma=args.gamma)
 
         if args.amp:
             worker = Worker_Vision_AMP(model, rank, optimizer, scheduler, train_loader, args.device)
@@ -161,7 +160,7 @@ if __name__=='__main__':
     parser.add_argument('--wd', type=float, default=0.0,  help='weight decay')
     parser.add_argument('--gamma', type=float, default=0.1)
     parser.add_argument('--momentum', type=float, default=0.0)
-    parser.add_argument('--warmup_step', type=int, default=15)
+    parser.add_argument('--warmup_step', type=int, default=0)
     parser.add_argument('--epoch', type=int, default=6000)
     parser.add_argument('--early_stop', type=int, default=6000, help='w.r.t., iterations')
     parser.add_argument('--milestones', type=int, nargs='+', default=[2400, 4800])

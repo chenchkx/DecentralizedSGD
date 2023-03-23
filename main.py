@@ -142,13 +142,13 @@ if __name__=='__main__':
     parser.add_argument('--n_swap', type=int, default=None)
 
     # mode parameter
-    parser.add_argument('--mode', type=str, default='ring', choices=['csgd', 'ring', 'meshrgrid', 'exponential'])
+    parser.add_argument('--mode', type=str, default='csgd', choices=['csgd', 'ring', 'meshrgrid', 'exponential'])
     parser.add_argument('--shuffle', type=str, default="fixed", choices=['fixed', 'random'])
     parser.add_argument('--size', type=int, default=16)
     parser.add_argument('--port', type=int, default=29500)
     parser.add_argument('--backend', type=str, default="gloo")
     # deep model parameter
-    parser.add_argument('--model', type=str, default='ResNet18', 
+    parser.add_argument('--model', type=str, default='ResNet18_M', 
                         choices=['ResNet18', 'AlexNet', 'DenseNet121', 'AlexNet_M','ResNet18_M', 'ResNet34_M', 'DenseNet121_M'])
     parser.add_argument("--pretrained", type=int, default=1)
 

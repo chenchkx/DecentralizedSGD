@@ -6,6 +6,7 @@ __pycache__/
 
 .vscode
 
+pre*
 logs_runs
 logs_perf
 hessian*
