@@ -23,10 +23,6 @@ class Warmup_MultiStepLR(LambdaLR):
         
         if lr_rate<=0.1:
             return 0.1
-        elif lr_rate<=0.3:
-            return 0.3
-        elif lr_rate<=0.5:
-           return 0.5
         else:
             return lr_rate
 
