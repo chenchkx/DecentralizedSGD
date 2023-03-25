@@ -28,7 +28,7 @@ def smoothing(array, width):
         output[i] = array[ind_begin:ind_end].mean()
     return output
 
-ROOT = 'csv_data'
+ROOT = 'logs_csv_pre_0325'
 rolling_step = 1
 smooth_rate = 0.8
 
