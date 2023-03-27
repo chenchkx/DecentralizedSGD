@@ -1,11 +1,4 @@
 
-# TinyImageNet training 100000
-# 50000/(512*16) = 12.20
-# 50000/(64*16)  = 96.16
-
-## AlexNet
-python main.py --dataset_name "TinyImageNet" --image_size 64 --batch_size 64 --mode "csgd" --size 16 --lr 0.1 --model "AlexNet_M" --warmup_step 0 --milestones 2400 4800 --early_stop 6000 --epoch 6000 --seed 666 --pretrained 1 --device 0
-python main.py --dataset_name "TinyImageNet" --image_size 64 --batch_size 512 --mode "csgd" --size 16 --lr 0.8 --model "AlexNet_M" --warmup_step 0 --milestones 2400 4800 --early_stop 6000 --epoch 6000 --seed 666 --pretrained 1 --device 0
 
 
 ## ResNet18
