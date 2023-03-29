@@ -223,7 +223,7 @@ def generate_P(mode, size):
             result[i][i] = 1 - 1 / size
             result[0][i] = 1 / size
             result[i][0] = 1 / size
-    elif mode == "meshrgrid":
+    elif mode == "meshgrid":
         assert size > 0
         i = int(np.sqrt(size))
         while size % i != 0:

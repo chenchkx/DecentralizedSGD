@@ -11,8 +11,7 @@ def load_cifar100(root, transforms=None, image_size=32,
 
     train_transforms = tfs.Compose([
         tfs.Resize((image_size,image_size)),
-        tfs.RandomHorizontalFlip(0.5),  
-        tfs.RandomRotation(degrees=15),
+        tfs.RandomHorizontalFlip(),  
         tfs.ToTensor(),
         tfs.Normalize([0.5073715, 0.4867007, 0.441096], [0.26750046, 0.25658613, 0.27630225])
     ])
