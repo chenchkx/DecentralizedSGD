@@ -1,7 +1,7 @@
 # The repository contains the codes of D-SGD and C-SGD
 
 The results of AlexNet, ResNet-18 and ResNet-34 using D-SGD and C-SGD on CIFAR-10 are shown in the following figure.
-![](figures/results_cifar10.jpeg)
+![](figures/fig_cifar10.jpeg)
 
 ## Example of usage
 
