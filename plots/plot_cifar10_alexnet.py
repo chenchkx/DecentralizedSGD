@@ -64,7 +64,7 @@ plt.plot(x_data, y_data, linestyle='-', linewidth=1.5, color=sns.color_palette(n
 
 plt.xlabel('iteration', fontsize = 24)
 plt.ylabel('validation accuracy (%)', fontsize = 24)
-plt.ylim(0.6,0.89999)
+plt.ylim(0.575,0.925)
 plt.legend(loc='lower right', fontsize=21, bbox_to_anchor = (0.5,0.01,0.48,0.5))
 plt.tick_params(labelsize=24)  #调整坐标轴数字大小
 plt.show()
