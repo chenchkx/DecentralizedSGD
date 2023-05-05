@@ -14,6 +14,8 @@ python main.py --dataset_name "CIFAR10" --image_size 56 --batch_size 512 --mode 
 # ResNet18_M + LAMB (Layer-wise Adaptive Moments optimizer for Batching training (LAMB))
 python main_lamb.py --dataset_name "CIFAR10" --image_size 56 --batch_size 64 --mode "ring" --size 16 --lr 0.007 --model "ResNet18_M" --shuffle 'random' --early_stop 6000 --epoch 6000 --seed 666 --pretrained 1 --device 0
 python main_lamb.py --dataset_name "CIFAR10" --image_size 56 --batch_size 512 --mode "ring" --size 16 --lr 0.02 --model "ResNet18_M" --shuffle 'random' --early_stop 6000 --epoch 6000 --seed 666 --pretrained 1 --device 0
+# without pretrain
+python main.py --dataset_name "CIFAR10" --image_size 56 --batch_size 64 --mode "ring" --size 16 --lr 0.1 --model "ResNet18_M" --milestones 4800 9600 --early_stop 12000 --epoch 12000 --seed 666 --pretrained 0 --device 0
 
 
 ## ResNet34_M

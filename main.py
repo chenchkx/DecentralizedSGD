@@ -157,7 +157,7 @@ if __name__=='__main__':
     parser.add_argument('--wd', type=float, default=0.0,  help='weight decay')
     parser.add_argument('--gamma', type=float, default=0.1)
     parser.add_argument('--momentum', type=float, default=0.0)
-    parser.add_argument('--warmup_step', type=int, default=15)
+    parser.add_argument('--warmup_step', type=int, default=0)
     parser.add_argument('--epoch', type=int, default=6000)
     parser.add_argument('--early_stop', type=int, default=6000, help='w.r.t., iterations')
     parser.add_argument('--milestones', type=int, nargs='+', default=[2400, 4800])

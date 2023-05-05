@@ -3,7 +3,7 @@ import math
 from torch.optim.lr_scheduler import LambdaLR
 
 class Warmup_MultiStepLR(LambdaLR):
-    def __init__(self, optimizer, warmup_step=10, milestones=[20, 30], gamma=0.5, init_rate=0.0, last_epoch=-1):
+    def __init__(self, optimizer, warmup_step=10, milestones=[20, 30], gamma=0.1, init_rate=0.0, last_epoch=-1):
         self.optimizer = optimizer
         self.warmup_step = warmup_step
         self.milestones = milestones
