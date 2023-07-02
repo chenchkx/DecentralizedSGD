@@ -59,6 +59,7 @@ def add_identity(args, dir_path):
                      f"{args.batch_size}-"+
                      f"{args.mode}-"+
                      f"{args.shuffle}-"+
+                     f"{args.affine_type}-"+ 
                      f"{args.size}-"+
                      f"{args.model}-"+
                      f"{args.pretrained}-"+
