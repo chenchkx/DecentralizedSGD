@@ -86,12 +86,11 @@ def main(args):
                     for worker in worker_list:
                         worker.step()
                         for name, param in worker.model.named_parameters():
-                            if 'bn' in name:
+                            if iteration % 10 == 0:
                                 param.data = torch.zeros_like(param.data)
                                 for i in range(args.size):
                                     p = P_perturbed[worker.rank][i]
                                     param.data += model_dict_list[i][name].data * p
-                        # worker.step() # 效果会变差
                         worker.update_grad()
                 elif args.affine_type == 'type2':
                     for worker in worker_list:
@@ -102,8 +101,18 @@ def main(args):
                                 for i in range(args.size):
                                     p = P_perturbed[worker.rank][i]
                                     param.data += model_dict_list[i][name].data * p
-                        # worker.step() # 效果会变差
                         worker.update_grad()
+                elif args.affine_type == 'type3':
+                    for worker in worker_list:
+                        worker.step()
+                        for name, param in worker.model.named_parameters():
+                            if 'bn' in name:
+                                param.data = torch.zeros_like(param.data)
+                                for i in range(args.size):
+                                    p = P_perturbed[worker.rank][i]
+                                    param.data += model_dict_list[i][name].data * p
+                        worker.update_grad()
+
                 else:
                     for worker in worker_list:
                         worker.step()
@@ -168,6 +177,7 @@ if __name__=='__main__':
     parser.add_argument('--mode', type=str, default='ring', choices=['csgd', 'ring', 'meshgrid', 'exponential'])
     parser.add_argument('--shuffle', type=str, default="fixed", choices=['fixed', 'random'])
     parser.add_argument('--affine_type', type=str, default="type1")
+    parser.add_argument('--loc_step', type=int, default=10)
     parser.add_argument('--size', type=int, default=16)
     parser.add_argument('--port', type=int, default=29500)
     parser.add_argument('--backend', type=str, default="gloo")

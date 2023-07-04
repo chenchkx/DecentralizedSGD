@@ -60,6 +60,7 @@ def add_identity(args, dir_path):
                      f"{args.mode}-"+
                      f"{args.shuffle}-"+
                      f"{args.affine_type}-"+ 
+                     f"{args.loc_step}-"+ 
                      f"{args.size}-"+
                      f"{args.model}-"+
                      f"{args.pretrained}-"+
