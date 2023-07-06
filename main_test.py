@@ -86,7 +86,7 @@ def main(args):
                     for worker in worker_list:
                         worker.step()
                         for name, param in worker.model.named_parameters():
-                            if iteration % 10 == 0:
+                            if iteration % args.loc_step == 0:
                                 param.data = torch.zeros_like(param.data)
                                 for i in range(args.size):
                                     p = P_perturbed[worker.rank][i]
@@ -96,7 +96,7 @@ def main(args):
                     for worker in worker_list:
                         worker.step()
                         for name, param in worker.model.named_parameters():
-                            if 'bn' in name or iteration % 10 == 0:
+                            if 'bn' in name or iteration % args.loc_step == 0:
                                 param.data = torch.zeros_like(param.data)
                                 for i in range(args.size):
                                     p = P_perturbed[worker.rank][i]
