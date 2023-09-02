@@ -91,7 +91,6 @@ def main(args):
                                 p = P_perturbed[worker.rank][i]
                                 param.data += model_dict_list[i][name].data * p
                     # worker.step() # 效果会变差
-                    worker.refresh_bn()
                     worker.update_grad()
 
             center_model = copy.deepcopy(worker_list[0].model)
@@ -99,7 +98,13 @@ def main(args):
                 for worker in worker_list[1:]:
                     param.data += worker.model.state_dict()[name].data
                 param.data /= args.size
-            
+
+            # refresh running_mean and running_var in batchnorm
+            center_model.train()
+            for batch in probe_train_loader:
+                data, _ = batch[0].to(args.device), batch[1].to(args.device)
+                center_model(data) 
+
             if iteration % 50 == 0:    
                 start_time = datetime.datetime.now() 
                 eval_iteration = iteration

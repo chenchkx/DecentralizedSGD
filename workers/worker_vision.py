@@ -34,7 +34,7 @@ class Worker_Vision:
 
         batch = self.train_loader_iter.next()
         data, target = batch[0].to(self.device), batch[1].to(self.device)
-        output = self.model(data)
+        self.model(data)
         # loss = criterion(output, target)
         # self.optimizer.zero_grad()
         # loss.backward()
