@@ -83,18 +83,30 @@ def main(args):
                 for worker in worker_list:
                     model_dict_list.append(worker.model.state_dict())  
                 
-
                 if args.affine_type == 'type1':
                     for worker in worker_list:
                         worker.step()
                     for worker in worker_list:
                         for name, param in worker.model.named_parameters():
-                            if iteration % args.loc_step == 0:
-                                param.data = torch.zeros_like(param.data)
-                                for i in range(args.size):
-                                    p = P_perturbed[worker.rank][i]
-                                    param.data += model_dict_list[i][name].data * p
+                            param.data = torch.zeros_like(param.data)
+                            work_weight = torch.zeros((1,len(torch.nonzero(P_perturbed[worker.rank]))))
+                            for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
+                                work_weight[0,i] = torch.sum(param.grad*(dict(worker_list[torch.nonzero(P_perturbed[worker.rank])[i]].model.named_parameters())[name].grad-param.grad))
+                            work_weight_sf = torch.softmax(work_weight,dim=1)
+                            # for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
+                            #     p = work_weight_sf[0,i]
+                            #     param.data += model_dict_list[torch.nonzero(P_perturbed[worker.rank])[i]][name].data * p
+                            for i in range(args.size):
+                                p = P_perturbed[worker.rank][i]
+                                param.data += model_dict_list[i][name].data * p
+                        # worker.step() # 效果会变差
+                        writer.add_scalar("work_weight0", work_weight[0,0], iteration)
+                        writer.add_scalar("work_weight1", work_weight[0,1], iteration)
+                        writer.add_scalar("work_weight2", work_weight[0,1], iteration)
                         worker.update_grad()
+                    if iteration % 100 == 0:
+                        print(work_weight)
+                        print(work_weight_sf)
                 elif args.affine_type == 'type2':
                     for worker in worker_list:
                         worker.step()
@@ -118,21 +130,30 @@ def main(args):
                 else:
                     for worker in worker_list:
                         worker.step()
-                    for worker in worker_list:
                         for name, param in worker.model.named_parameters():
                             param.data = torch.zeros_like(param.data)
-                            work_weight = torch.zeros((1,len(torch.nonzero(P_perturbed[worker.rank]))))
-                            for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
-                                work_weight[0,i] = torch.sum(param.grad*(dict(worker_list[torch.nonzero(P_perturbed[worker.rank])[i]].model.named_parameters())[name].grad-param.grad))
-                            work_weight_sf = torch.softmax(work_weight,dim=1)
-                            for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
-                                p = work_weight_sf[0,i]
-                                param.data += model_dict_list[torch.nonzero(P_perturbed[worker.rank])[i]][name].data * p
-                        # worker.step() # 效果会变差
+                            for i in range(args.size):
+                                p = P_perturbed[worker.rank][i]
+                                param.data += model_dict_list[i][name].data * p
                         worker.update_grad()
-                    if iteration % 100 == 0:
-                        print(work_weight)
-                        print(work_weight_sf)
+
+                    # for worker in worker_list:
+                    #     worker.step()
+                    # for worker in worker_list:
+                    #     for name, param in worker.model.named_parameters():
+                    #         param.data = torch.zeros_like(param.data)
+                    #         work_weight = torch.zeros((1,len(torch.nonzero(P_perturbed[worker.rank]))))
+                    #         for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
+                    #             work_weight[0,i] = torch.sum(param.grad*(dict(worker_list[torch.nonzero(P_perturbed[worker.rank])[i]].model.named_parameters())[name].grad-param.grad))
+                    #         work_weight_sf = torch.softmax(work_weight,dim=1)
+                    #         for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
+                    #             p = work_weight_sf[0,i]
+                    #             param.data += model_dict_list[torch.nonzero(P_perturbed[worker.rank])[i]][name].data * p
+                    #     # worker.step() # 效果会变差
+                    #     worker.update_grad()
+                    # if iteration % 100 == 0:
+                    #     print(work_weight)
+                    #     print(work_weight_sf)
 
             center_model = copy.deepcopy(worker_list[0].model)
             for name, param in center_model.named_parameters():
@@ -212,7 +233,7 @@ if __name__=='__main__':
     parser.add_argument('--early_stop', type=int, default=6000, help='w.r.t., iterations')
     parser.add_argument('--milestones', type=int, nargs='+', default=[2400, 4800])
     parser.add_argument('--seed', type=int, default=666)
-    parser.add_argument("--device", type=int, default=0)
+    parser.add_argument("--device", type=int, default=1)
     parser.add_argument("--amp", action='store_true', help='automatic mixed precision')
     args = parser.parse_args()
 
