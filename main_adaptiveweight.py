@@ -20,6 +20,7 @@ dir_path = os.path.dirname(__file__)
 nfs_dataset_path1 = '/mnt/nfs4-p1/ckx/datasets/'
 nfs_dataset_path2 = '/nfs4-p1/ckx/datasets/'
 
+from hessian_eigenthings import compute_hessian_eigenthings
 # torch.set_num_threads(4) 
 
 def main(args):
@@ -87,12 +88,28 @@ def main(args):
                     for worker in worker_list:
                         worker.step()
                     for worker in worker_list:
+                    # for worker in worker_list:
                         for name, param in worker.model.named_parameters():
                             param.data = torch.zeros_like(param.data)
-                            work_weight = torch.zeros((1,len(torch.nonzero(P_perturbed[worker.rank]))))
-                            for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
-                                work_weight[0,i] = torch.sum(param.grad*(dict(worker_list[torch.nonzero(P_perturbed[worker.rank])[i]].model.named_parameters())[name].grad-param.grad))
-                            work_weight_sf = torch.softmax(work_weight,dim=1)
+                            if worker.rank == 0:
+                                if name == 'layer1.0.conv1.weight':
+                                    work_weight_l0 = torch.zeros((1,len(torch.nonzero(P_perturbed[worker.rank]))))
+                                    for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
+                                        work_weight_l0[0,i] = torch.sum(param.grad*(dict(worker_list[torch.nonzero(P_perturbed[worker.rank])[i]].model.named_parameters())[name].grad-param.grad))
+                                    writer.add_scalar("work_weight_l0_0", work_weight_l0[0,0], iteration)
+                                    writer.add_scalar("work_weight_l0_1", work_weight_l0[0,1], iteration)
+                                    writer.add_scalar("work_weight_l0_2", work_weight_l0[0,2], iteration)
+                                if name == 'layer4.1.conv2.weight':
+                                    work_weight_l4 = torch.zeros((1,len(torch.nonzero(P_perturbed[worker.rank]))))
+                                    for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
+                                        work_weight_l4[0,i] = torch.sum(param.grad*(dict(worker_list[torch.nonzero(P_perturbed[worker.rank])[i]].model.named_parameters())[name].grad-param.grad))
+                                    writer.add_scalar("work_weight_l4_0", work_weight_l4[0,0], iteration)
+                                    writer.add_scalar("work_weight_l4_1", work_weight_l4[0,1], iteration)
+                                    writer.add_scalar("work_weight_l4_2", work_weight_l4[0,2], iteration)
+                            # work_weight = torch.zeros((1,len(torch.nonzero(P_perturbed[worker.rank]))))
+                            # for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
+                            #     work_weight[0,i] = torch.sum(param.grad*(dict(worker_list[torch.nonzero(P_perturbed[worker.rank])[i]].model.named_parameters())[name].grad-param.grad))
+                            # work_weight_sf = torch.softmax(work_weight,dim=1)
                             # for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
                             #     p = work_weight_sf[0,i]
                             #     param.data += model_dict_list[torch.nonzero(P_perturbed[worker.rank])[i]][name].data * p
@@ -100,22 +117,35 @@ def main(args):
                                 p = P_perturbed[worker.rank][i]
                                 param.data += model_dict_list[i][name].data * p
                         # worker.step() # 效果会变差
-                        writer.add_scalar("work_weight0", work_weight[0,0], iteration)
-                        writer.add_scalar("work_weight1", work_weight[0,1], iteration)
-                        writer.add_scalar("work_weight2", work_weight[0,1], iteration)
                         worker.update_grad()
-                    if iteration % 100 == 0:
-                        print(work_weight)
-                        print(work_weight_sf)
+
                 elif args.affine_type == 'type2':
                     for worker in worker_list:
                         worker.step()
-                        for name, param in worker.model.named_parameters():
-                            if 'bn' in name or iteration % args.loc_step == 0:
+                    for worker in worker_list:
+                    # for worker in worker_list:
+                        if iteration % args.loc_step == 0:
+                            for name, param in worker.model.named_parameters():
                                 param.data = torch.zeros_like(param.data)
+                                if worker.rank == 0:
+                                    if name == 'layer1.0.conv1.weight':
+                                        work_weight_l0 = torch.zeros((1,len(torch.nonzero(P_perturbed[worker.rank]))))
+                                        for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
+                                            work_weight_l0[0,i] = torch.sum(param.grad*(dict(worker_list[torch.nonzero(P_perturbed[worker.rank])[i]].model.named_parameters())[name].grad-param.grad))
+                                        writer.add_scalar("work_weight_l0_0", work_weight_l0[0,0], iteration)
+                                        writer.add_scalar("work_weight_l0_1", work_weight_l0[0,1], iteration)
+                                        writer.add_scalar("work_weight_l0_2", work_weight_l0[0,2], iteration)
+                                    if name == 'layer4.1.conv2.weight':
+                                        work_weight_l4 = torch.zeros((1,len(torch.nonzero(P_perturbed[worker.rank]))))
+                                        for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
+                                            work_weight_l4[0,i] = torch.sum(param.grad*(dict(worker_list[torch.nonzero(P_perturbed[worker.rank])[i]].model.named_parameters())[name].grad-param.grad))
+                                        writer.add_scalar("work_weight_l4_0", work_weight_l4[0,0], iteration)
+                                        writer.add_scalar("work_weight_l4_1", work_weight_l4[0,1], iteration)
+                                        writer.add_scalar("work_weight_l4_2", work_weight_l4[0,2], iteration)
                                 for i in range(args.size):
                                     p = P_perturbed[worker.rank][i]
                                     param.data += model_dict_list[i][name].data * p
+                        # worker.step() # 效果会变差
                         worker.update_grad()
                 elif args.affine_type == 'type3':
                     for worker in worker_list:
@@ -161,13 +191,33 @@ def main(args):
                     param.data += worker.model.state_dict()[name].data
                 param.data /= args.size
 
+
             # refresh running_mean and running_var in batchnorm
             center_model.train()
             for batch in probe_train_loader:
                 data, _ = batch[0].to(args.device), batch[1].to(args.device)
-                center_model(data)      
+                center_model(data)    
 
-            if iteration % 50 == 0:    
+                  
+            if iteration % 100 == 0:   
+                hessian_model = load_model('ResNet18', classes, pretrained=True)
+                model.load_state_dict(center_model.state_dict())
+                criterion = torch.nn.CrossEntropyLoss()
+                eigenvals, eigenvecs = compute_hessian_eigenthings(
+                    hessian_model,
+                    probe_train_loader,
+                    criterion,
+                    1,
+                    mode='power_iter',
+                    # power_iter_steps=args.num_steps,
+                    max_possible_gpu_samples=2048,
+                    # momentum=args.momentum,
+                    full_dataset=False,
+                    use_gpu=False,
+                ) 
+                writer.add_scalar("max_eigenval", eigenvals[0], iteration)
+
+            if iteration % 50 == 0:   
                 start_time = datetime.datetime.now() 
                 eval_iteration = iteration
                 if args.amp:
@@ -213,8 +263,8 @@ if __name__=='__main__':
     # mode parameter
     parser.add_argument('--mode', type=str, default='ring', choices=['csgd', 'ring', 'meshgrid', 'exponential'])
     parser.add_argument('--shuffle', type=str, default="fixed", choices=['fixed', 'random'])
-    parser.add_argument('--affine_type', type=str, default="None")
-    parser.add_argument('--loc_step', type=int, default=10)
+    parser.add_argument('--affine_type', type=str, default="type1")
+    parser.add_argument('--loc_step', type=int, default=100)
     parser.add_argument('--size', type=int, default=16)
     parser.add_argument('--port', type=int, default=29500)
     parser.add_argument('--backend', type=str, default="gloo")
@@ -233,7 +283,7 @@ if __name__=='__main__':
     parser.add_argument('--early_stop', type=int, default=6000, help='w.r.t., iterations')
     parser.add_argument('--milestones', type=int, nargs='+', default=[2400, 4800])
     parser.add_argument('--seed', type=int, default=666)
-    parser.add_argument("--device", type=int, default=1)
+    parser.add_argument("--device", type=int, default=0)
     parser.add_argument("--amp", action='store_true', help='automatic mixed precision')
     args = parser.parse_args()
 
