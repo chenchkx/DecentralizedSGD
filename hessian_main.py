@@ -73,7 +73,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset_name", type=str, default='CIFAR10',
                                             choices=['CIFAR10','CIFAR100','TinyImageNet'])
     parser.add_argument("--image_size", type=int, default=56, help='input image size')
-    parser.add_argument("--batch_size", type=int, default=512)
+    parser.add_argument("--batch_size", type=int, default=64)
     parser.add_argument("--eval_batch_size", default=16, type=int, help="test set batch size")
     parser.add_argument("--momentum", default=0.0, type=float, help="power iteration momentum term")
     parser.add_argument("--num_steps", default=50, type=int, help="number of power iter steps")

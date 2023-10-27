@@ -167,23 +167,6 @@ def main(args):
                                 param.data += model_dict_list[i][name].data * p
                         worker.update_grad()
 
-                    # for worker in worker_list:
-                    #     worker.step()
-                    # for worker in worker_list:
-                    #     for name, param in worker.model.named_parameters():
-                    #         param.data = torch.zeros_like(param.data)
-                    #         work_weight = torch.zeros((1,len(torch.nonzero(P_perturbed[worker.rank]))))
-                    #         for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
-                    #             work_weight[0,i] = torch.sum(param.grad*(dict(worker_list[torch.nonzero(P_perturbed[worker.rank])[i]].model.named_parameters())[name].grad-param.grad))
-                    #         work_weight_sf = torch.softmax(work_weight,dim=1)
-                    #         for i in range(len(torch.nonzero(P_perturbed[worker.rank]))):
-                    #             p = work_weight_sf[0,i]
-                    #             param.data += model_dict_list[torch.nonzero(P_perturbed[worker.rank])[i]][name].data * p
-                    #     # worker.step() # 效果会变差
-                    #     worker.update_grad()
-                    # if iteration % 100 == 0:
-                    #     print(work_weight)
-                    #     print(work_weight_sf)
 
             center_model = copy.deepcopy(worker_list[0].model)
             for name, param in center_model.named_parameters():
@@ -191,17 +174,16 @@ def main(args):
                     param.data += worker.model.state_dict()[name].data
                 param.data /= args.size
 
-
             # refresh running_mean and running_var in batchnorm
             center_model.train()
             for batch in probe_train_loader:
                 data, _ = batch[0].to(args.device), batch[1].to(args.device)
                 center_model(data)    
-
-                  
+       
             if iteration % 100 == 0:   
                 hessian_model = load_model('ResNet18', classes, pretrained=True)
-                model.load_state_dict(center_model.state_dict())
+                # hessian_modelload_state_dict(torch.load('logs_perf/CIFAR10/dict/Mar15_01:56:19_vipa-110_CIFAR10s56-512-csgd-fixed-16-ResNet18_M-1-0.8-0.0-0.1-0.0-60-6000-6000-666-False.t7')['state_dict']).load_state_dict(torch.load('logs_perf/CIFAR10/dict/Mar15_01:56:19_vipa-110_CIFAR10s56-512-csgd-fixed-16-ResNet18_M-1-0.8-0.0-0.1-0.0-60-6000-6000-666-False.t7')['state_dict'])
+                hessian_model.load_state_dict(center_model.state_dict())
                 criterion = torch.nn.CrossEntropyLoss()
                 train_eigenvals, _ = compute_hessian_eigenthings(
                     hessian_model,
@@ -212,8 +194,9 @@ def main(args):
                     # power_iter_steps=args.num_steps,
                     max_possible_gpu_samples=2048,
                     # momentum=args.momentum,
+                    full_dataset=False,
+                    use_gpu=False
                 ) 
-                
                 valid_eigenvals, _ = compute_hessian_eigenthings(
                     hessian_model,
                     probe_valid_loader,
@@ -223,6 +206,8 @@ def main(args):
                     # power_iter_steps=args.num_steps,
                     max_possible_gpu_samples=2048,
                     # momentum=args.momentum,
+                    full_dataset=False,
+                    use_gpu=False
                 ) 
                 writer.add_scalar("train_max_eigenval", train_eigenvals[0], iteration)
                 writer.add_scalar("valid_max_eigenval", valid_eigenvals[0], iteration)
@@ -272,7 +257,7 @@ if __name__=='__main__':
     # mode parameter
     parser.add_argument('--mode', type=str, default='ring', choices=['csgd', 'ring', 'meshgrid', 'exponential'])
     parser.add_argument('--shuffle', type=str, default="fixed", choices=['fixed', 'random'])
-    parser.add_argument('--affine_type', type=str, default="type1")
+    parser.add_argument('--affine_type', type=str, default="None")
     parser.add_argument('--loc_step', type=int, default=100)
     parser.add_argument('--size', type=int, default=16)
     parser.add_argument('--port', type=int, default=29500)
