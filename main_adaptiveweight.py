@@ -203,7 +203,7 @@ def main(args):
                 hessian_model = load_model('ResNet18', classes, pretrained=True)
                 model.load_state_dict(center_model.state_dict())
                 criterion = torch.nn.CrossEntropyLoss()
-                eigenvals, eigenvecs = compute_hessian_eigenthings(
+                train_eigenvals, _ = compute_hessian_eigenthings(
                     hessian_model,
                     probe_train_loader,
                     criterion,
@@ -212,11 +212,20 @@ def main(args):
                     # power_iter_steps=args.num_steps,
                     max_possible_gpu_samples=2048,
                     # momentum=args.momentum,
-                    full_dataset=False,
-                    use_gpu=False,
                 ) 
-                writer.add_scalar("max_eigenval", eigenvals[0], iteration)
-
+                
+                valid_eigenvals, _ = compute_hessian_eigenthings(
+                    hessian_model,
+                    probe_valid_loader,
+                    criterion,
+                    1,
+                    mode='power_iter',
+                    # power_iter_steps=args.num_steps,
+                    max_possible_gpu_samples=2048,
+                    # momentum=args.momentum,
+                ) 
+                writer.add_scalar("train_max_eigenval", train_eigenvals[0], iteration)
+                writer.add_scalar("valid_max_eigenval", valid_eigenvals[0], iteration)
             if iteration % 50 == 0:   
                 start_time = datetime.datetime.now() 
                 eval_iteration = iteration
@@ -274,7 +283,7 @@ if __name__=='__main__':
     parser.add_argument("--pretrained", type=int, default=1)
 
     # optimization parameter
-    parser.add_argument('--lr', type=float, default=0.1, help='learning rate')
+    parser.add_argument('--lr', type=float, default=0.8, help='learning rate')
     parser.add_argument('--wd', type=float, default=0.0,  help='weight decay')
     parser.add_argument('--gamma', type=float, default=0.1)
     parser.add_argument('--momentum', type=float, default=0.0)

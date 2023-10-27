@@ -9,7 +9,7 @@ __pycache__/
 pre*
 logs_runs
 logs_perf
-hessian*
+# hessian*
 datasets/cifar-10*
 datasets/tiny-imagenet*
 # fig*
