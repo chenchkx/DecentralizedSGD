@@ -180,7 +180,7 @@ def main(args):
                 data, _ = batch[0].to(args.device), batch[1].to(args.device)
                 center_model(data)    
        
-            if iteration % 100 == 0:   
+            if iteration % 30 == 0:   
                 hessian_model = load_model('ResNet18', classes, pretrained=True)
                 # hessian_modelload_state_dict(torch.load('logs_perf/CIFAR10/dict/Mar15_01:56:19_vipa-110_CIFAR10s56-512-csgd-fixed-16-ResNet18_M-1-0.8-0.0-0.1-0.0-60-6000-6000-666-False.t7')['state_dict']).load_state_dict(torch.load('logs_perf/CIFAR10/dict/Mar15_01:56:19_vipa-110_CIFAR10s56-512-csgd-fixed-16-ResNet18_M-1-0.8-0.0-0.1-0.0-60-6000-6000-666-False.t7')['state_dict'])
                 hessian_model.load_state_dict(center_model.state_dict())
